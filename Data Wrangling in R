@@ -1,0 +1,330 @@
+#############
+# Random Numbers
+#############
+
+v<-rnorm(10)  # 10 random numbers drawn from the normal distribution
+v
+
+u<-runif(5)   # 5 random numbers drawn from the uniform distribution
+u
+
+
+######
+# Creating Data Frames in {dplyr}
+#####
+
+# Builid some simple "LONG" vectors
+vecNameL<-c("Mike","Mary","Rachel","Mike","Keith")
+vecAgeL<-c(53,41,26,22,54)
+vecStateL<-c("MO","IN","MO","NY","TN")
+vecFemaleL<-c(FALSE,TRUE,TRUE,FALSE,FALSE)
+
+# Extra vector
+vecIdsl<-sample(1:300,5,replace = FALSE)
+
+
+# BUILD A DATA FRAME USING data_frame()
+dfCustomer1<-data_frame(Name=vecNameL,
+                        Age=vecAgeL,State=vecStateL,
+                        Female=vecFemaleL,Code=1)
+
+dfCustomer1   # view the table
+
+glimpse(dfCustomer1) # {dplyr}  View the structure of the table
+
+
+
+# BUILD A SECOND DATA FRAME USING data_frame()  {dplyr}
+
+# Builid some simple "SHORT" vectors for example purposes
+vecNameS<-c("Neicy","Mike","Nichole")
+vecAgeS<-c(45,45,32)
+vecStateS<-c("CA","MO","TN")
+vecFemaleS<-c(TRUE,FALSE,TRUE)
+
+# Extra vector
+vecIds<-sample(1:300,3,replace = FALSE)
+
+dfCustomer2<-data_frame(Name=vecNameS,
+                        Age=vecAgeS,State=vecStateS,
+                        Female=vecFemales,Code=2)
+
+
+###########################################
+## Add a column to the data frame
+###########################################
+
+dfCustomer1  # Original table
+
+dfIds<-data_frame(Ids=vecIdsl)  # Convert Columns to join into data frame
+dfCustomer1<-bind_cols(dfCustomer1,dfIds)  # Add column
+
+dfCustomer1  # New table
+
+
+###########################################
+## Add the rows of a data frame
+###########################################
+## Start over
+rm(dfCustomer1)
+dfCustomer1<-data_frame(Name=vecNameL,
+                        Age=vecAgeL,State=vecStateL,
+                        Female=vecFemaleL,Code=1)
+
+# Build a second data frame
+vecNameS<-c("Neicy","Mike","Nichole")
+vecAgeS<-c(45,45,32)
+vecStateS<-c("CA","MO","TN")
+vecFemaleS<-c(TRUE,FALSE,TRUE)
+dfCustomer2<-data_frame(Name=vecNameS,
+                        Age=vecAgeS,State=vecStateS,
+                       Female=vecFemaleS,Code=2)
+
+# Binding
+dfCustomer1
+dfCustomer2
+dfCustomer <-bind_rows(dfCustomer1,dfCustomer2) # Bind the two tables together
+dfCustomer
+
+###########################################
+## Rename a variable (column)
+###########################################
+## Start over
+rm(dfCustomer1)
+dfCustomer1<-data_frame(Name=vecNameL,
+                        Age=vecAgeL,State=vecStateL,
+                        Female=vecFemaleL,Code=1)
+
+dfCustomer1
+dfCustomer1<-rename(dfCustomer1,Region=Code)
+dfCustomer1
+
+###########################################
+## Remove a variable (column)
+###########################################
+## Start over
+rm(dfCustomer1)
+dfCustomer1<-data_frame(Name=vecNameL,
+                        Age=vecAgeL,State=vecStateL,
+                        Female=vecFemaleL,Code=1)
+
+dfCustomer1
+dfCustomer1<-dplyr::select(dfCustomer1,-Female) # Remove the variable Female
+dfCustomer1
+
+
+###########################################
+# Slice a set of rows
+########################################
+rm(dfCustomer1)
+dfCustomer1<-data_frame(Name=vecNameL,
+  Age=vecAgeL,State=vecStateL,
+  Female=vecFemaleL,Code=1)
+
+dfCustomer1
+# Get rows 2, 3, and 4
+dfSlicedCust <- slice(dfCustomer1,2:4) 
+dfSlicedCust
+dfCustomer1 # Unchanged
+
+###########################################
+# Filter out rows
+########################################
+rm(dfCustomer1)
+rm(dfCustomer1)
+dfCustomer1<-data_frame(Name=vecNameL,
+  Age=vecAgeL,State=vecStateL,
+  Female=vecFemaleL,Code=1)
+
+dfCustomer1
+# Get Age >50 observations
+dfOver50 <- filter(dfCustomer1,Age>50) 
+dfOver50
+dfCustomer1 # Unchanged
+
+########################################
+# Select 20% rows at random
+########################################
+# Use a larger table
+car<-mtcars
+car
+# Get 20% at random
+nrow(car)*0.2
+dfRanCars <- sample_frac(car,0.2,replace=TRUE)
+dfRanCars
+
+########################################
+# Select 20% rows at random
+########################################
+# Use a larger table
+car<-mtcars
+
+# Get 20% at random
+dfRanCars <- sample_n(car,5,replace=TRUE)
+dfRanCars
+
+
+
+data(diamonds)
+########################################
+# Mutate - Add a volume variable - one
+########################################
+# Get a random subset
+dsmall <- sample_n(diamonds,100,replace=FALSE)
+head(dsmall)
+# Add column
+dv<-mutate(dsmall,vol=x*y*z)
+head(dv)
+
+dvt<-transmute(dsmall,vol=x*y*z)  #adds and shows just one column
+head(dvt)
+
+dvpipe<-dsmall %>% mutate(vol=x*y*z)
+head(dvpipe)
+dvd<-d %>%  sample_n(100,replace=FALSE) %>% mutate(vol=x*y*z)
+
+########################################
+# Mutate - Add a volume variable - Several Related
+########################################
+# Get a random subset
+dsmall <- sample_n(diamonds,100,replace=FALSE)
+head(dsmall)
+mvpc<-mutate(dsmall,vol=x*y*z,ppc=price/carat,ppv=price/vol,
+             md=max(ppc,ppv),ratio=round(ppc/md*100.0,2))
+head(mvpc)
+
+
+########################################
+# Transmute - Create new; drop all old
+########################################
+# Get a random subset
+dsmall <- sample_n(diamonds,100,replace=FALSE)
+head(dsmall)
+tvpc<-transmute(dsmall,vol=x*y*z,ppc=price/carat,ppv=price/vol,
+                md=max(ppc,ppv),ratio=round(ppc/md*100.0,2))
+head(tvpc)
+
+########################################
+# Transmute - Create new; drop some old
+########################################
+# Get a random subset
+dsmall <- sample_n(diamonds,100,replace=FALSE)
+head(dsmall)
+tvpcn<-transmute(price=price,carat=carat,dsmall,
+                 vol=x*y*z,ppc=price/carat,ppv=price/vol,
+                 md=max(ppc,ppv),ratio=round(ppc/md*100.0,2))
+head(tvpcn)
+
+
+
+
+###################################################
+# Building data frames with custom summary variables
+###################################################
+car<-mtcars
+car$carb<-factor(car$carb)
+car$cyl<-factor(car$cyl)
+car$vs<-factor(car$vs)
+car$am<-factor(car$am)
+car$gear<-factor(car$gear)
+
+head(car)
+ts<-summarise(car,mmpg=mean(mpg),maxhp=max(hp),minwt=min(wt))
+ts
+
+
+tmmx<- car %>% summarise(cyl=cyl,gear=gear,mxmpg=max(mpg))
+
+tmmx
+
+
+###################################################
+# Using %>% to break into simpler steps
+###################################################
+head(car)
+tcp<-car  %>% summarise(mmpg=mean(mpg))
+tcp
+
+###################################################
+# Using %>% to break into simpler steps multiple variables
+###################################################
+head(car)
+tsp<-car %>%  summarise(mmpg=mean(mpg),maxhp=max(hp),minwt=min(wt))
+tsp
+
+
+###################################################
+# Summarizing with categories
+###################################################
+head(car)
+tgc<-car %>% group_by(cyl) %>% summarise(mmpg=mean(mpg))
+tgc
+
+###################################################
+# Summarizing with two categories
+###################################################
+head(car)
+tgcg<-car %>% group_by(cyl,gear) %>% summarise(mmpg=mean(mpg),
+                                              maxhp=max(hp),
+                                              minwt=min(wt))
+tgcg
+
+###################################################
+# Counting size of groups
+###################################################
+head(car)
+tcntc<-car %>% count(cyl)
+tcntc
+
+###################################################
+# Counting size of two groups
+###################################################
+head(car)
+tcntc<-car %>% count(cyl,gear)
+tcntc
+
+
+
+
+###################################################
+# Extracting special rows
+###################################################
+filter(car,mpg==max(mpg))
+
+###################################################
+# Geting Paricular a car
+###################################################
+# Add car name to observation
+dfn<-data_frame(name=row.names(car))
+mcars<-bind_cols(car,dfn)
+# find row
+mcarmx<-filter(mcars,mpg==max(mpg))
+s<-paste("The car with the best mpg is the",mcarmx$name,
+         "with an mpg of",mcarmx$mpg)
+s
+
+
+###################################################
+# Sort by increasing mpg
+###################################################
+head(car)
+scar<-arrange(car,mpg)
+head(scar)
+
+###################################################
+# Sort by decreasing mpg
+###################################################
+head(car)
+dsscar<-arrange(car,desc(mpg))
+head(dsscar)
+
+head(car)
+
+gcar<- car %>% 
+  group_by(cyl) %>% 
+  arrange(mpg)
+
+gcar
+
+
+
